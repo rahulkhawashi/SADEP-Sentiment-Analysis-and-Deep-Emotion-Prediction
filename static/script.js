@@ -25,6 +25,8 @@
     confidenceText: document.getElementById("confidenceText"),
     echoedText: document.getElementById("echoedText"),
     barsContainer: document.getElementById("barsContainer"),
+    chips: document.querySelectorAll(".chip"),
+    driftItems: document.querySelectorAll(".drift-item"),
   };
 
   let modelReady = false;
@@ -80,6 +82,32 @@
   el.analyzeBtn.addEventListener("click", runAnalysis);
 
   /* ---------------------------------------------------------------
+     Example chips — click to drop a sample sentence into the input
+  --------------------------------------------------------------- */
+  el.chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      el.textInput.value = chip.dataset.text || "";
+      el.textInput.dispatchEvent(new Event("input"));
+      el.textInput.focus();
+    });
+  });
+
+  /* ---------------------------------------------------------------
+     Drift emotion items — click to load sample text
+  --------------------------------------------------------------- */
+  el.driftItems.forEach((item) => {
+    item.addEventListener("click", () => {
+      const sample = item.dataset.sample;
+      if (sample) {
+        el.textInput.value = sample;
+        el.textInput.dispatchEvent(new Event("input"));
+        el.textInput.focus();
+        document.getElementById("console")?.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    });
+  });
+
+  /* ---------------------------------------------------------------
      Analysis flow
   --------------------------------------------------------------- */
   async function runAnalysis() {
@@ -126,7 +154,7 @@
 
   function exitThinking(success) {
     el.analyzeBtn.classList.remove("loading");
-    el.analyzeBtn.querySelector(".btn-label").textContent = "Read the mood";
+    el.analyzeBtn.querySelector(".btn-label").textContent = "Analyze mood";
     syncButtonState();
     el.orb.classList.remove("thinking");
     if (!success) {
@@ -151,6 +179,15 @@
     el.confidenceText.textContent = `${(data.confidence * 100).toFixed(1)}% confidence`;
     el.echoedText.textContent = `“${originalText}”`;
 
+    // Highlight matching drift emotion capsule in active resonance
+    el.driftItems.forEach((item) => {
+      item.classList.remove("active-resonance");
+      if (item.dataset.emotion === emotion) {
+        item.classList.add("active-resonance");
+        setTimeout(() => item.classList.remove("active-resonance"), 5000);
+      }
+    });
+
     renderBars(data.all_probabilites);
 
     el.resultSection.hidden = false;
@@ -170,8 +207,8 @@
       const row = document.createElement("div");
       row.className = `bar-row bar-${label}`;
       row.innerHTML = `
-        <span class="bar-label">${EMOJI[label] || ""} ${label}</span>
-        <span class="bar-track"><span class="bar-fill"></span></span>
+        <span class="bar-label">${EMOJI[label] || ""} ${capitalize(label)}</span>
+        <div class="bar-track"><div class="bar-fill"></div></div>
         <span class="bar-pct">${pct.toFixed(1)}%</span>
       `;
       el.barsContainer.appendChild(row);

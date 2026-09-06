@@ -1,91 +1,234 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Moodline — read the emotion in your words</title>
-<meta name="description" content="Type a sentence and watch a BiGRU model read the emotion inside it.">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SADEP — Sentiment Analysis and Deep Emotion Prediction</title>
+  <meta name="description" content="Type a sentence and watch a BiGRU model read the emotion inside it.">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,500;1,9..144,600&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet">
 
-<link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/style.css?v=7">
 </head>
+
 <body>
 
-<div class="grain"></div>
+  <div class="grain"></div>
 
-<div class="app">
+  <!-- Ambient moving emotion design elements in empty space -->
+  <aside class="emotion-drift-field" aria-label="Floating emotion mood nodes">
+    <!-- Moving ambient mood aura waves -->
+    <div class="drift-aura aura-1"></div>
+    <div class="drift-aura aura-2"></div>
+    <div class="drift-aura aura-3"></div>
 
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-mark" id="statusDot" title="checking server..."></span>
-      <span class="brand-name">Moodline</span>
+    <!-- Left floating emotion constellation -->
+    <div class="drift-col drift-col-left">
+      <div class="drift-item drift-joy" data-emotion="joy"
+        data-sample="I am so incredibly happy and proud of what we accomplished!" title="Click to try Joy">
+        <span class="drift-emoji">😄</span>
+        <div class="drift-text">
+          <span class="drift-title">Joy</span>
+          <span class="drift-sub">positive mood</span>
+        </div>
+        <span class="drift-action">try</span>
+      </div>
+
+      <div class="drift-item drift-love" data-emotion="love"
+        data-sample="Every time I think about that beautiful fireplace, I am flooded with a deep, loving nostalgia for the comfort we shared."
+        title="Click to try Love">
+        <span class="drift-emoji">❤️</span>
+        <div class="drift-text">
+          <span class="drift-title">Love</span>
+          <span class="drift-sub">deep warmth</span>
+        </div>
+        <span class="drift-action">try</span>
+      </div>
+
+      <div class="drift-item drift-surprise" data-emotion="surprise"
+        data-sample="I was shocked and completely surprised by the unexpected gift!" title="Click to try Surprise">
+        <span class="drift-emoji">😲</span>
+        <div class="drift-text">
+          <span class="drift-title">Surprise</span>
+          <span class="drift-sub">high arousal</span>
+        </div>
+        <span class="drift-action">try</span>
+      </div>
     </div>
-    <p class="brand-tag">an instrument that reads the mood inside a sentence</p>
-  </header>
 
-  <main>
-
-    <section class="console" id="console">
-
-      <div class="orb-stage">
-        <div class="orb-glow" id="orbGlow"></div>
-        <div class="orb" id="orb">
-          <span class="orb-emoji" id="orbEmoji">✎</span>
+    <!-- Right floating emotion constellation -->
+    <div class="drift-col drift-col-right">
+      <div class="drift-item drift-sadness" data-emotion="sadness" data-sample="I feel so alone and hopeless today."
+        title="Click to try Sadness">
+        <span class="drift-emoji">😢</span>
+        <div class="drift-text">
+          <span class="drift-title">Sadness</span>
+          <span class="drift-sub">melancholy</span>
         </div>
+        <span class="drift-action">try</span>
       </div>
 
-      <div class="input-panel">
-        <span class="eyebrow">INPUT</span>
-        <textarea
-          id="textInput"
-          maxlength="2000"
-          placeholder="Write a sentence and let it speak for itself&#10;— e.g. “I can't believe we actually pulled this off.”"
-        ></textarea>
+      <div class="drift-item drift-fear" data-emotion="fear"
+        data-sample="I feel terrified when walking down dark alleyways alone." title="Click to try Fear">
+        <span class="drift-emoji">😨</span>
+        <div class="drift-text">
+          <span class="drift-title">Fear</span>
+          <span class="drift-sub">apprehension</span>
+        </div>
+        <span class="drift-action">try</span>
+      </div>
 
-        <div class="input-footer">
-          <span class="char-count"><span id="charCount">0</span> / 2000</span>
-          <button id="analyzeBtn" class="btn-primary" disabled>
-            <span class="btn-label">Read the mood</span>
-            <span class="btn-arrow">→</span>
-          </button>
+      <div class="drift-item drift-anger" data-emotion="anger"
+        data-sample="I am furious that they cancelled the trip at the last minute." title="Click to try Anger">
+        <span class="drift-emoji">😠</span>
+        <div class="drift-text">
+          <span class="drift-title">Anger</span>
+          <span class="drift-sub">high intensity</span>
+        </div>
+        <span class="drift-action">try</span>
+      </div>
+    </div>
+  </aside>
+
+  <div class="app">
+
+    <header class="topbar">
+      <div class="brand-hero">
+        <div class="brand-badge">
+          <span class="brand-mark" id="statusDot" title="checking server..."></span>
+          <span class="brand-badge-label">AI Sentiment &amp; Mood Engine</span>
+        </div>
+        <h1 class="brand-name">SADEP</h1>
+        <p class="brand-full">Sentiment Analysis &amp; Deep Emotion Prediction</p>
+      </div>
+      <p class="brand-tag">An instrument that reads the emotion in your words, powered by a bidirectional GRU neural
+        network.</p>
+    </header>
+
+    <main>
+
+      <section class="console" id="console">
+
+        <div class="orb-stage">
+          <div class="orb-glow" id="orbGlow"></div>
+          <div class="orb" id="orb">
+            <span class="orb-emoji" id="orbEmoji">✎</span>
+          </div>
         </div>
 
-        <p class="error-msg" id="errorMsg" hidden></p>
-      </div>
+        <div class="input-panel">
+          <span class="panel-label">What's on your mind?</span>
+          <textarea id="textInput" maxlength="2000"
+            placeholder="Write a sentence and let it speak for itself&#10;— e.g. “I can't believe we actually pulled this off.”"></textarea>
 
-    </section>
+          <div class="examples" id="examples">
+            <button type="button" class="chip"
+              data-text="Every time I think about that beautiful fireplace, I am flooded with a deep, loving nostalgia for the comfort we shared.">Every
+              time I think about that beautiful fireplace, I am flooded with a deep, loving nostalgia for the comfort we
+              shared.</button>
+            <button type="button" class="chip" data-text="I feel so alone and hopeless today.">I feel so alone and
+              hopeless today.</button>
+            <button type="button" class="chip"
+              data-text="I am furious that they cancelled the trip at the last minute.">I am furious that they cancelled
+              the trip at the last minute.</button>
+            <button type="button" class="chip" data-text="I feel terrified when walking down dark alleyways alone.">I
+              feel terrified when walking down dark alleyways alone.</button>
+            <button type="button" class="chip"
+              data-text="I was shocked and completely surprised by the unexpected gift!">I was shocked and completely
+              surprised by the unexpected gift!</button>
+          </div>
 
-    <section class="result" id="resultSection" hidden>
+          <div class="input-footer">
+            <span class="char-count"><span id="charCount">0</span> / 2000</span>
+            <button id="analyzeBtn" class="btn-primary" disabled>
+              <span class="btn-label">Analyze mood</span>
+            </button>
+          </div>
 
-      <div class="reveal">
-        <span class="eyebrow">DETECTED</span>
-        <div class="reveal-main">
-          <span class="reveal-emoji" id="emotionEmoji">😄</span>
-          <h1 id="emotionWord">Joy</h1>
+          <p class="error-msg" id="errorMsg" hidden></p>
         </div>
-        <span class="confidence-mono" id="confidenceText">92.4% confidence</span>
-        <blockquote class="echoed-text" id="echoedText"></blockquote>
-      </div>
 
-      <div class="breakdown">
-        <span class="eyebrow">BREAKDOWN</span>
-        <div class="bars" id="barsContainer"></div>
-      </div>
+      </section>
 
-    </section>
+      <section class="result" id="resultSection" hidden>
 
-  </main>
+        <div class="reveal">
+          <span class="panel-label">Detected emotion</span>
+          <div class="reveal-main">
+            <span class="reveal-emoji" id="emotionEmoji">😄</span>
+            <h1 id="emotionWord">Joy</h1>
+          </div>
+          <span class="confidence-mono" id="confidenceText">92.4% confidence</span>
+          <blockquote class="echoed-text" id="echoedText"></blockquote>
+        </div>
 
-  <footer class="footbar">
-    <span id="serverStatusText">connecting to model…</span>
-    <span class="footbar-hint">⌘ / Ctrl + Enter to analyze</span>
-  </footer>
+        <div class="breakdown">
+          <span class="panel-label">Full breakdown</span>
+          <div class="bars" id="barsContainer"></div>
+        </div>
 
-</div>
+      </section>
 
-<script src="/static/script.js"></script>
+      <section class="about">
+        <div class="about-body">
+          <div class="about-copy">
+            <h2>How SADEP reads a sentence</h2>
+            <p>Your text is broken into tokens, turned into vectors, and passed through a bidirectional GRU that reads
+              the sentence forward and backward at once. A classifier layer then scores it against six emotions and
+              returns the strongest match with a confidence level.</p>
+          </div>
+          <div class="pipeline">
+            <div class="pipeline-step">
+              <span class="step-index">01</span>
+              <span class="step-title">Your sentence</span>
+              <span class="step-desc">Raw text, tokenized and cleaned</span>
+            </div>
+            <span class="pipeline-arrow">›</span>
+            <div class="pipeline-step">
+              <span class="step-index">02</span>
+              <span class="step-title">Embedding</span>
+              <span class="step-desc">Words mapped to vectors</span>
+            </div>
+            <span class="pipeline-arrow">›</span>
+            <div class="pipeline-step">
+              <span class="step-index">03</span>
+              <span class="step-title">BiGRU layer</span>
+              <span class="step-desc">Reads context both ways</span>
+            </div>
+            <span class="pipeline-arrow">›</span>
+            <div class="pipeline-step">
+              <span class="step-index">04</span>
+              <span class="step-title">Classifier</span>
+              <span class="step-desc">Scores all six emotions</span>
+            </div>
+            <span class="pipeline-arrow">›</span>
+            <div class="pipeline-step">
+              <span class="step-index">05</span>
+              <span class="step-title">Result</span>
+              <span class="step-desc">Top emotion + confidence</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <footer class="footbar">
+      <span id="serverStatusText">connecting to model…</span>
+      <span class="footbar-author">— by Rahul Khawshi · <a
+          href="mailto:khawashirahul@gmail.com">khawashirahul@gmail.com</a></span>
+      <a href="https://www.linkedin.com/in/rahulkhawshi" target="_blank" rel="noopener noreferrer"
+        class="footbar-link">linkedin.com/in/rahulkhawshi ↗</a>
+    </footer>
+
+  </div>
+
+  <script src="/static/script.js?v=4"></script>
 </body>
+
 </html>
