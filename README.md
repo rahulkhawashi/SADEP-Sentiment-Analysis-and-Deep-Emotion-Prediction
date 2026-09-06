@@ -121,8 +121,8 @@ flowchart TD
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/rahulkhawshi/Emotion-Prediction.git
-cd Emotion-Prediction
+git clone https://github.com/rahulkhawashi/SADEP-Sentiment-Analysis-and-Deep-Emotion-Prediction.git
+cd SADEP-Sentiment-Analysis-and-Deep-Emotion-Prediction
 ```
 
 ### 3. Install Dependencies
