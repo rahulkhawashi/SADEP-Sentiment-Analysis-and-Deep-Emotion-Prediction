@@ -114,7 +114,7 @@ body {
   color: var(--text);
   font-family: var(--font-body);
   transition: background 900ms var(--ease-soft);
-  overflow-x: hidden;
+  /* overflow-x: hidden removed — it clips position:fixed children in Chrome/Edge */
 }
 
 textarea,
@@ -1181,5 +1181,83 @@ textarea:focus {
 @media (max-width: 1040px) {
   .drift-col {
     display: none;
+  }
+}
+
+/* ─── RK Logo — upper right, designed monogram badge ────────────────────── */
+
+.rk-logo {
+  display: block;
+  margin: 24px auto 32px;
+  width: 72px;
+  height: 72px;
+  perspective: 600px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.rk-logo-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  gap: 0;
+
+  /* No background, no border, no shadow — letters only */
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+
+  /* 3D Y-axis continuous rotation */
+  animation: rk-spin3d 4s linear infinite;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+/* ── R — dominant letter ── */
+.rk-r {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 800;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--accent);
+  /* warm brown — readable on light bg */
+  letter-spacing: -3px;
+  position: relative;
+  z-index: 2;
+  text-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.12),
+    0 2px 8px rgba(142, 88, 49, 0.25);
+}
+
+/* ── K — supporting letter, slightly smaller & dropped ── */
+.rk-k {
+  font-family: 'Fraunces', Georgia, serif;
+  font-style: italic;
+  font-weight: 700;
+  font-size: 30px;
+  line-height: 1;
+  color: var(--text-dim);
+  /* slightly dimmer than R */
+  position: relative;
+  z-index: 1;
+  margin-top: 6px;
+  margin-left: -2px;
+  text-shadow:
+    1px 1px 0 rgba(0, 0, 0, 0.08),
+    0 2px 6px rgba(102, 64, 34, 0.20);
+}
+
+@keyframes rk-spin3d {
+  0% {
+    transform: rotateY(0deg);
+  }
+
+  100% {
+    transform: rotateY(360deg);
   }
 }
